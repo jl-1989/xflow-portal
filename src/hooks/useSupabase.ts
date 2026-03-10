@@ -35,14 +35,15 @@ export function useSupabaseQuery<T>(
       const { data: result, error: err } = await query
 
       if (err) throw err
-      setData(result as T[])
+      setData((result as T[]) || [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : '查询失败')
+      const message = err instanceof Error ? err.message : '查询失败'
+      setError(message)
       console.error(`Error fetching ${table}:`, err)
     } finally {
       setLoading(false)
     }
-  }, [table, options?.select, options?.filter, options?.order])
+  }, [table])
 
   useEffect(() => {
     fetchData()
@@ -55,17 +56,17 @@ export function useSupabaseMutations<T extends { id: string }>(table: string) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const create = async (data: Omit<T, 'id' | 'created_at' | 'updated_at'>) => {
+  const create = async (data: Partial<T>) => {
     setLoading(true)
     setError(null)
     try {
       const { data: result, error: err } = await supabase
         .from(table)
-        .insert(data)
+        .insert(data as never)
         .select()
         .single()
 
-      if (err) throw err
+      if (err) throw new Error(err.message)
       return result as T
     } catch (err) {
       const message = err instanceof Error ? err.message : '创建失败'
@@ -82,12 +83,12 @@ export function useSupabaseMutations<T extends { id: string }>(table: string) {
     try {
       const { data: result, error: err } = await supabase
         .from(table)
-        .update(data)
+        .update(data as never)
         .eq('id', id)
         .select()
         .single()
 
-      if (err) throw err
+      if (err) throw new Error(err.message)
       return result as T
     } catch (err) {
       const message = err instanceof Error ? err.message : '更新失败'
@@ -103,7 +104,7 @@ export function useSupabaseMutations<T extends { id: string }>(table: string) {
     setError(null)
     try {
       const { error: err } = await supabase.from(table).delete().eq('id', id)
-      if (err) throw err
+      if (err) throw new Error(err.message)
       return true
     } catch (err) {
       const message = err instanceof Error ? err.message : '删除失败'

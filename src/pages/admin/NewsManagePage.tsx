@@ -81,26 +81,40 @@ export function NewsManagePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const submitBtn = (e.target as HTMLFormElement).querySelector('button[type="submit"]')
+    if (submitBtn) submitBtn.setAttribute('disabled', 'true')
+    
     try {
       if (editingNews) {
         await update(editingNews.id, {
-          ...formData,
+          title: formData.title,
+          summary: formData.summary || null,
+          content: formData.content,
+          category: formData.category,
+          status: formData.status,
+          cover_image: formData.cover_image || null,
           published_at: formData.status === 'published' ? new Date().toISOString() : null,
         })
       } else {
         await create({
-          ...formData,
+          title: formData.title,
           slug: generateSlug(formData.title),
+          summary: formData.summary || null,
+          content: formData.content,
+          category: formData.category,
+          status: formData.status,
+          cover_image: formData.cover_image || null,
           view_count: 0,
           published_at: formData.status === 'published' ? new Date().toISOString() : null,
           author_id: null,
-        })
+        } as never)
       }
       handleCloseModal()
       refetch()
     } catch (err) {
+      const message = err instanceof Error ? err.message : JSON.stringify(err)
       console.error('保存失败:', err)
-      alert('保存失败，请重试')
+      alert('保存失败: ' + message)
     }
   }
 
