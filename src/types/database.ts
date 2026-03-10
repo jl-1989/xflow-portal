@@ -16,7 +16,7 @@ export interface News {
   summary: string | null
   content: string
   cover_image: string | null
-  category: 'company' | 'industry'
+  category: 'company' | 'industry' | 'tech'
   status: 'draft' | 'published'
   view_count: number
   author_id: string | null
