@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Calendar, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export function AboutPage() {

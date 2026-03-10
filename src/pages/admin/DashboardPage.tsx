@@ -1,11 +1,9 @@
 import { Card } from '@/components/ui/Card'
 import {
   TrendingUp,
-  Users,
   FileText,
   MessageSquare,
   Eye,
-  Clock,
 } from 'lucide-react'
 
 const stats = [
